@@ -1,11 +1,15 @@
 # example of training a gan on mnist
+import os
+import tensorflow as tf
+import cv2
+import numpy as np
 from numpy import expand_dims
 from numpy import zeros
 from numpy import ones
 from numpy import vstack
 from numpy.random import randn
 from numpy.random import randint
-from keras.datasets.mnist import load_data
+from keras.datasets.cifar10 import load_data
 from keras.optimizers import Adam
 from keras.models import Sequential
 from keras.layers import Dense
@@ -18,12 +22,12 @@ from keras.layers import Dropout
 from matplotlib import pyplot
 
 # define the standalone discriminator model
-def define_discriminator(in_shape=(28,28,1)):
+def define_discriminator(in_shape=(32,32,3)):
 	model = Sequential()
-	model.add(Conv2D(64, (3,3), strides=(2, 2), padding='same', input_shape=in_shape))
+	model.add(Conv2D(64, (4,4), strides=(2, 2), padding='same', input_shape=in_shape))
 	model.add(LeakyReLU(alpha=0.2))
 	model.add(Dropout(0.4))
-	model.add(Conv2D(64, (3,3), strides=(2, 2), padding='same'))
+	model.add(Conv2D(64, (4,4), strides=(2, 2), padding='same'))
 	model.add(LeakyReLU(alpha=0.2))
 	model.add(Dropout(0.4))
 	model.add(Flatten())
@@ -37,17 +41,17 @@ def define_discriminator(in_shape=(28,28,1)):
 def define_generator(latent_dim):
 	model = Sequential()
 	# foundation for 7x7 image
-	n_nodes = 128 * 7 * 7
+	n_nodes = 128 * 8 * 8
 	model.add(Dense(n_nodes, input_dim=latent_dim))
 	model.add(LeakyReLU(alpha=0.2))
-	model.add(Reshape((7, 7, 128)))
+	model.add(Reshape((8, 8, 128)))
 	# upsample to 14x14
 	model.add(Conv2DTranspose(128, (4,4), strides=(2,2), padding='same'))
 	model.add(LeakyReLU(alpha=0.2))
 	# upsample to 28x28
 	model.add(Conv2DTranspose(128, (4,4), strides=(2,2), padding='same'))
 	model.add(LeakyReLU(alpha=0.2))
-	model.add(Conv2D(1, (7,7), activation='sigmoid', padding='same'))
+	model.add(Conv2D(3, (8,8), activation='sigmoid', padding='same'))
 	return model
 
 # define the combined generator and discriminator model, for updating the generator
@@ -70,9 +74,9 @@ def load_real_samples():
 	# load mnist dataset
 	(trainX, _), (testX, _) = load_data()
 	# expand to 3d, e.g. add channels dimension
-	X = expand_dims(testX, axis=-1)
+	# X = expand_dims(testX, axis=-1)
 	# convert from unsigned ints to floats
-	X = X.astype('float32')
+	X = testX.astype('float32')
 	# scale from [0,255] to [0,1]
 	X = X / 255.0
 	return X
@@ -164,6 +168,7 @@ def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batc
 			print('>%d, %d/%d, d=%.3f, g=%.3f' % (i+1, j+1, bat_per_epo, d_loss, g_loss))
 		# evaluate the model performance, sometimes
 		summarize_performance(i, g_model, d_model, dataset, latent_dim)
+	gan_model.save_weights('gan_weights.h5')
 
 # size of the latent space
 latent_dim = 100
@@ -173,10 +178,11 @@ d_model = define_discriminator()
 g_model = define_generator(latent_dim)
 # create the gan
 gan_model = define_gan(g_model, d_model)
+if os.path.exists('gan_weights.h5'): gan_model.load_weights('gan_weights.h5')
 # load image data
 dataset = load_real_samples()
 #number of epochs
-n_epochs = 20
+n_epochs = 100
 #batch size
 batch_size = 256
 # train model
