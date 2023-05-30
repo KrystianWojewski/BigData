@@ -19,11 +19,11 @@ def evaluate_fitness(individual):
         _, reward, terminated, _, _ = env.step(action)
         total_reward += 1
         if terminated and reward == 0:
-            total_reward -= gene_length
-            break
+            total_reward -= 100
+            return total_reward
         elif terminated and reward == 1:
-            total_reward += gene_length
-            break
+            total_reward -= 300
+            return abs(total_reward)
     return total_reward
 
 def tournament_selection(population, fitness_scores, tournament_size):
@@ -67,6 +67,8 @@ def genetic_algorithm(population, num_generations, tournament_size, mutation_rat
 
         # Zastąpienie populacji potomnej populacją rodzicielską
         population = mutated_offspring
+
+    fitness_scores = [evaluate_fitness(individual) for individual in population]
 
     best_individual_index = np.argmax(fitness_scores)
     best_individual = population[best_individual_index]

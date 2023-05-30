@@ -3,7 +3,7 @@ import random
 import gym
 import numpy as np
 
-env = gym.make('FrozenLake8x8-v1', render_mode='ansi', is_slippery=False)
+env = gym.make('FrozenLake8x8-v1', render_mode='human', is_slippery=False)
 
 state, _ = env.reset()
 
@@ -46,6 +46,7 @@ while not done:
 
 state, _ = env.reset()
 done = False
+fails = 0
 
 while not done:
     maksimum = max(Q[state, :])
@@ -58,12 +59,10 @@ while not done:
 
     if terminated and reward == 1:
         done = True
-
-    if done:
-        if reward == 1:
-            print("Gratulacje! Osiągnięto cel!")
-        else:
-            print("Niestety, nie udało się osiągnąć celu.")
+        print("fails:", fails)
+        print("Gratulacje! Osiągnięto cel!")
+        env.close()
 
     if terminated and reward == 0:
+        fails += 1
         state, _ = env.reset()
