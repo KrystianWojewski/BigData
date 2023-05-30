@@ -35,9 +35,6 @@ for i in range(epoch):
 
             Q[state, action] = (Q[state, action] * ((goal_pos_sum - distance) / goal_pos_sum)) * state_chg
 
-        if reward == 1:
-            print("")
-
         if terminated and reward == 1:
             done = True
             break
