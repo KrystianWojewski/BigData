@@ -22,9 +22,9 @@ Vx_2 = FuzzySet(function=Triangular_MF(a=-0.2, b=0, c=0.2), term='Zero')
 Vx_3 = FuzzySet(function=Triangular_MF(a=0.2, b=5, c=5), term='Positive')
 FS.add_linguistic_variable('VelocityX', LinguisticVariable([Vx_1, Vx_2, Vx_3], concept='VelocityX', universe_of_discourse=[-5, 5]))
 
-Vy_1 = FuzzySet(function=Triangular_MF(a=-5, b=-5, c=-0.3), term='Negative')
-Vy_2 = FuzzySet(function=Triangular_MF(a=-0.3, b=0, c=0.3), term='Zero')
-Vy_3 = FuzzySet(function=Triangular_MF(a=0.3, b=5, c=5), term='Positive')
+Vy_1 = FuzzySet(function=Triangular_MF(a=-5, b=-5, c=-0.2), term='Negative')
+Vy_2 = FuzzySet(function=Triangular_MF(a=-0.2, b=0, c=0.2), term='Zero')
+Vy_3 = FuzzySet(function=Triangular_MF(a=0.2, b=5, c=5), term='Positive')
 FS.add_linguistic_variable('VelocityY', LinguisticVariable([Vy_1, Vy_2, Vy_3], concept='VelocityY', universe_of_discourse=[-5, 5]))
 
 A_1 = FuzzySet(function=Triangular_MF(a=-3, b=-3, c=-0.3), term='Negative')
@@ -40,6 +40,7 @@ FS.add_linguistic_variable('Action', LinguisticVariable([Ac_1, Ac_2, Ac_3, Ac_4]
 
 FS.plot_variable('PositionX')
 FS.plot_variable('VelocityX')
+FS.plot_variable('VelocityY')
 FS.plot_variable('Angle')
 FS.plot_variable('Action')
 
